@@ -1,0 +1,14 @@
+@import url(./todo.css);
+@import url(./todoList.css);
+
+.footer {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  translate: -1rem -1rem;
+}
+
+.footer > button {
+  background-color: #fff;
+  color: #000;
+}

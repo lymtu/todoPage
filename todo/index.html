@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <title>待办页</title>
+    <link rel="shortcut icon" href="./assets/list.svg" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+
+  <body>
+    <div id="main" class="calendar">
+      <div class="scrollContainer">
+        <div id="todoContainer">
+          <div class="header">
+            <p>
+              <span id="todoCountTitle">
+                共 <span id="todoCount">0</span> 个待办事项
+              </span>
+              <span>/</span>
+              <span id="doneCountTitle">
+                已完成 <span id="doneCount">0</span> 个
+              </span>
+            </p>
+            <div class="buttonGroup">
+              <button type="button" id="showCalendarBtn">
+                <img src="./assets/calendar.svg" alt="calendar.svg" />
+                <span id="calendarBtnText">日历</span>
+              </button>
+              <button type="button" id="addTodoBtn">
+                <img src="./assets/list-add.svg" alt="list-add.svg" />
+                <span>添加代办事项</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="body">
+            <div class="scrollContainer">
+              <div id="todoListContainer" class="no-scroll-bar_">
+                <div id="todoUlPlaceholder"></div>
+                <ul id="todoListUl"></ul>
+              </div>
+              <div id="doneListContainer" class="no-scroll-bar_">
+                <div id="doneUlPlaceholder"></div>
+                <ul id="doneListUl"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="calendarContainer">
+          <div class="header">
+            <button type="button" id="returnBtn">
+              <img src="./assets/return.svg" alt="return.svg" />
+              <span>返回列表</span>
+            </button>
+
+            <div>
+              <div>
+                <div class="calendarItem"></div>
+                <div>添加</div>
+              </div>
+
+              <div>
+                <div class="calendarItem"></div>
+                <div>完成</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="body">
+            <div id="calendarGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button id="clearAllBtn" type="button">清除全部？</button>
+      </div>
+
+      <dialog id="addTodoDialog">
+        <form action="" method="post" id="addTodoForm">
+          <h4>添加代办事项</h4>
+          <input
+            type="text"
+            name="todo"
+            id="todoInput"
+            placeholder="请输入待办事项"
+          />
+          <button type="submit">添加</button>
+        </form>
+      </dialog>
+
+      <dialog id="deleteTodoDialog">
+        <form action="" method="post" id="deleteTodoForm">
+          <h4>删除待办事项</h4>
+          <p>
+            确定要删除待办事项 "<span id="deleteTodoTitle">undefined</span>"
+            吗？
+          </p>
+          <input type="text" id="deleteTodoInput" name="todoId" hidden />
+          <button type="submit">删除</button>
+        </form>
+      </dialog>
+
+      <dialog id="clearAllDialog">
+        <form action="" method="post" id="clearAllForm">
+          <h4>清除全部？</h4>
+          <section>
+            <p>确定要清除全部事项吗？ 此操作不可撤销</p>
+          </section>
+          <button type="submit">清除全部</button>
+        </form>
+      </dialog>
+    </div>
+
+    <script type="module" src="./js/index.js"></script>
+    <script type="module" src="./js/calendarRender.js"></script>
+    <script>
+      window.addTodoBtn.addEventListener("click", () => {
+        window.addTodoDialog.show();
+      });
+
+      const dialogCloseHandler = (e) => {
+        if (e.currentTarget === e.target) {
+          e.target.close();
+        }
+      };
+
+      window.clearAllBtn.addEventListener("click", () => {
+        window.clearAllDialog.show();
+      });
+
+      window.addTodoDialog.addEventListener("click", dialogCloseHandler);
+      window.deleteTodoDialog.addEventListener("click", dialogCloseHandler);
+      window.clearAllDialog.addEventListener("click", dialogCloseHandler);
+    </script>
+  </body>
+</html>
