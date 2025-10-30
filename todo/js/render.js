@@ -1,5 +1,4 @@
 import { dispatchEvent, EventType } from "./utils/reducer.js";
-import { getStore } from "./utils/store.js";
 import {
   todoListDom,
   doneListDom,
@@ -11,21 +10,47 @@ import {
   deleteTodoInputDom,
   deleteTodoTitleDom,
 } from "./utils/domStore.js";
+import { partialDeepClone } from "./utils/deepClone.js";
 
 const createTodoItemElement = (todo) => {
   const li = document.createElement("li");
   // li.dataset.id = todo.id.toString(36);
   li.dataset.completed = todo.completed;
+  if (todo.completed) {
+    li.dataset.completedDate = todo.completedDate;
+  }
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.name = "completed";
   checkbox.checked = todo.completed;
   checkbox.addEventListener("change", () => {
     li.dataset.completed = checkbox.checked;
-    dispatchEvent(EventType.UPDATE, {
-      ...todo,
-      completed: checkbox.checked,
-    });
+
+    let completedDate = null;
+
+    if (checkbox.checked) {
+      completedDate = new Date().getTime();
+      li.dataset.completedDate = completedDate;
+    } else {
+      completedDate = parseInt(li.dataset.completedDate);
+      delete li.dataset.completedDate;
+    }
+
+    dispatchEvent(
+      EventType.UPDATE,
+      {
+        ...todo,
+        completed: checkbox.checked,
+        completedDate: checkbox.checked ? completedDate : null,
+      },
+      partialDeepClone(
+        {
+          ...todo,
+          completedDate: checkbox.checked ? null : completedDate,
+        },
+        1
+      )
+    );
   });
   const title = document.createElement("div");
   title.className = "title";
@@ -65,27 +90,16 @@ const createTodoItemElement = (todo) => {
 
 let listClientHeight = 0;
 
-const setTodoUlPlaceholder = () => {
-  const store = getStore();
+const setTodoUlPlaceholder = (todoCountAndTodayDoneCount) => {
   todoUlPlaceholder.style.height =
-    (store.todoCount + store.todayDoneCount) * listClientHeight + "px";
+    todoCountAndTodayDoneCount * listClientHeight + "px";
 };
 
-const setDoneUlPlaceholder = () => {
-  const store = getStore();
-  doneUlPlaceholder.style.height = store.doneCount * listClientHeight + "px";
+const setDoneUlPlaceholder = (doneCount) => {
+  doneUlPlaceholder.style.height = doneCount * listClientHeight + "px";
 };
 
-window.addEventListener("resize", () => {
-  listClientHeight = 0;
-  renderTodoList();
-  renderDoneList();
-  setTodoUlPlaceholder();
-  setDoneUlPlaceholder();
-});
-
-const renderTodoList = () => {
-  const store = getStore();
+const renderTodoList = (store) => {
   const todoList = store.todoList;
   const todayDoneList = store.todayDoneList;
   const todoKeys = Object.keys(todoList).sort(
@@ -143,9 +157,9 @@ const renderTodoList = () => {
   }
 };
 
-const renderDoneList = () => {
+const renderDoneList = (store) => {
   doneListUl.replaceChildren();
-  const doneList = getStore().doneList;
+  const doneList = store.doneList;
   const doneKeys = Object.keys(doneList).sort(
     (a, b) => parseInt(b) - parseInt(a)
   );

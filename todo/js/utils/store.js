@@ -19,6 +19,7 @@ export const getOriginStore = () => STORE;
 
 export const synchronizeCache = () => {
   STORE_CACHE = partialDeepClone(STORE, 2);
+  return STORE_CACHE;
 };
 
 export const init = async () => {
@@ -41,6 +42,7 @@ export const init = async () => {
   todoCountDom.textContent = STORE.todoCount;
   doneCountDom.textContent = STORE.doneCount;
   synchronizeCache();
+  return STORE_CACHE;
 };
 
 export const addTodo = (todo) => {
@@ -130,5 +132,4 @@ export const clearEventHandler = () => {
   STORE.doneCount = 0;
   STORE.todayDoneList = {};
   STORE.todayDoneCount = 0;
-  
 };

@@ -55,21 +55,20 @@
               <span>返回列表</span>
             </button>
 
-            <div>
-              <div>
-                <div class="calendarItem"></div>
-                <div>添加</div>
-              </div>
-
-              <div>
-                <div class="calendarItem"></div>
-                <div>完成</div>
-              </div>
-            </div>
+            <div id="monthTitle"></div>
           </div>
 
           <div class="body">
-            <div id="calendarGrid"></div>
+            <div class="calendarHeader">
+              <div class="calendarItem">日</div>
+              <div class="calendarItem">一</div>
+              <div class="calendarItem">二</div>
+              <div class="calendarItem">三</div>
+              <div class="calendarItem">四</div>
+              <div class="calendarItem">五</div>
+              <div class="calendarItem">六</div>
+            </div>
+            <div class="calendarBody" id="calendar"></div>
           </div>
         </div>
       </div>
@@ -114,7 +113,7 @@
       </dialog>
     </div>
 
-    <script type="module" src="./js/index.js"></script>
+    <script type="module" src="./js/index.js" async></script>
     <script type="module" src="./js/calendarRender.js"></script>
     <script>
       window.addTodoBtn.addEventListener("click", () => {

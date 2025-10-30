@@ -16,7 +16,10 @@ export const doneListUl = window.doneListUl;
 export const todoUlPlaceholder = window.todoUlPlaceholder;
 export const doneUlPlaceholder = window.doneUlPlaceholder;
 
+export const calendarContainerDom = window.calendarContainer;
 export const returnBtnDom = window.returnBtn;
+export const monthTitleDom = window.monthTitle;
+export const calendarDom = window.calendar;
 
 export const addTodoDialogDom = window.addTodoDialog;
 export const addTodoFormDom = window.addTodoForm;

@@ -18,6 +18,7 @@ import {
   clearEventHandler,
   deleteEventHandler,
   getOriginStore,
+  getStore,
   init,
   synchronizeCache,
   updateEventHandler,
@@ -43,16 +44,24 @@ import {
 } from "./utils/domStore.js";
 
 const updateTodoView = () => {
-  synchronizeCache();
-  setTodoUlPlaceholder();
-  renderTodoList();
+  const store = synchronizeCache();
+  setTodoUlPlaceholder(store.todoCount + store.todayDoneCount);
+  renderTodoList(store);
 };
 
 const updateDoneView = () => {
-  synchronizeCache();
-  setDoneUlPlaceholder();
-  renderDoneList();
+  const store = synchronizeCache();
+  setDoneUlPlaceholder(store.doneCount);
+  renderDoneList(store);
 };
+
+window.addEventListener("resize", () => {
+  const store = getStore();
+  renderTodoList(store);
+  renderDoneList(store);
+  setTodoUlPlaceholder(store.todoCount + store.todayDoneCount);
+  setDoneUlPlaceholder(store.doneCount);
+});
 
 showCalendarBtnDom.addEventListener("click", () => {
   const exist = mainDom.classList.contains("calendar");
@@ -69,10 +78,14 @@ addTodoFormDom.addEventListener("submit", (e) => {
     return;
   }
 
+  const date = Date.now();
+
   dispatchEvent(EventType.ADD, {
-    id: Date.now(),
+    id: date,
     title: todo,
     completed: false,
+    date,
+    completedDate: null,
   });
   e.target.reset();
   addTodoDialogDom.close();
@@ -116,15 +129,22 @@ let id = null;
 todoListDom.addEventListener("scroll", () => {
   if (id) cancelIdleCallback(id);
   id = requestIdleCallback(() => {
-    renderTodoList();
+    const store = getStore();
+    renderTodoList(store);
   });
 });
 
 doneListDom.addEventListener("scroll", () => {
   if (id) cancelIdleCallback(id);
   id = requestIdleCallback(() => {
-    renderDoneList();
+    const store = getStore();
+    renderDoneList(store);
   });
+});
+
+addEventListener(EventType.INIT, (data) => {
+  renderTodoList(data);
+  setTodoUlPlaceholder(data.todoCount + data.todayDoneCount);
 });
 
 addEventListener(EventType.ADD, (data) => {
@@ -132,13 +152,13 @@ addEventListener(EventType.ADD, (data) => {
   if (count === -1) return;
   todoCountDom.textContent = count;
   updateTodoView();
-});
+},1);
 
 addEventListener(EventType.UPDATE, (data) => {
   const { todoCount, doneCount } = updateEventHandler(data);
   doneCountDom.textContent = doneCount;
   todoCountDom.textContent = todoCount;
-});
+},1);
 
 addEventListener(EventType.DELETE, (data) => {
   const { todoCount, doneCount } = deleteEventHandler(data.id);
@@ -146,23 +166,26 @@ addEventListener(EventType.DELETE, (data) => {
   updateDoneView();
   doneCountDom.textContent = doneCount;
   todoCountDom.textContent = todoCount;
-});
+},1);
 
-addEventListener(EventType.CLEAR, () => {
-  clearStorage();
-  clearEventHandler();
-  updateDoneView();
-  updateTodoView();
-  doneCountDom.textContent = 0;
-  todoCountDom.textContent = 0;
-});
+addEventListener(
+  EventType.CLEAR,
+  () => {
+    clearStorage();
+    clearEventHandler();
+    updateDoneView();
+    updateTodoView();
+    doneCountDom.textContent = 0;
+    todoCountDom.textContent = 0;
+  },
+  1
+);
 
 addDecorator([EventType.ADD, EventType.UPDATE, EventType.DELETE], () => {
   const store = getOriginStore();
   setStorage(store);
 });
 
-init().then(() => {
-  renderTodoList();
-  setTodoUlPlaceholder();
+init().then((data) => {
+  dispatchEvent(EventType.INIT, data);
 });
