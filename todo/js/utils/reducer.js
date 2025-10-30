@@ -1,4 +1,5 @@
 export const EventType = {
+  INIT: "init",
   ADD: "add",
   DELETE: "delete",
   CLEAR: "clear",
@@ -70,10 +71,10 @@ export const addDecorator = (typeList, cb, priority = 0) => {
   });
 };
 
-export const dispatchEvent = (type, data) => {
+export const dispatchEvent = (type, data, oldData) => {
   if (!Event[type]) {
     return;
   }
-  Event[type].forEach(({ cb }) => cb(data));
+  Event[type].forEach(({ cb }) => cb(data, oldData));
   Decorator[type].forEach(({ cb }) => cb(type, data));
 };

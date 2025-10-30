@@ -54,7 +54,7 @@
   position: relative;
 }
 
-#main.done #todoContainer > .body > .scrollContainer {
+#main #todoContainer.done > .body > .scrollContainer {
   transform: translateX(-50%);
   -webkit-transform: translateX(-50%);
   -moz-transform: translateX(-50%);
